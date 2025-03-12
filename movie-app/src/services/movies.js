@@ -2,20 +2,25 @@ import conf from "../conf/conf";
 
 export class MovieService {
   apiURL;
-  apiKKey;
+  apiKey;
   apiOptions;
 
   constructor() {
-    this.apiKKey = conf.MOVIE_URL;
-    this.apiKKey = conf.MOVIE_API_KEY;
+    this.apiURL = conf.MOVIE_URL;
+    this.apiKey = conf.MOVIE_API_KEY;
     this.apiOptions = {
-      accept: "applcation/json",
-      Authorization: `Bearer ${this.apiKKey}`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${this.apiKey}`,
+      },
     };
   }
 
-  async getMovies() {
-    const endpoint = `${this.apiKKey}/genre/movie/list`;
+  async getMovies(query = "") {
+    const endpoint = query
+      ? `${this.apiURL}/search/movie?query=${encodeURIComponent(query)}`
+      : `${this.apiURL}/discover/movie?sort_by=popularity.desc`;
     const response = await fetch(endpoint, this.apiOptions);
     if (!response.ok) {
       throw new Error("Failed to fetch data");
@@ -25,3 +30,6 @@ export class MovieService {
     return data;
   }
 }
+
+const movieService = new MovieService();
+export default movieService;
